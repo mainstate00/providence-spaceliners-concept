@@ -12,5 +12,3 @@ with the live site in search results.
 
 Aircraft renders are design concepts generated for this proposal. They do not depict
 hardware that exists.
-
-Source and build tooling: see the full project README in the design repository.
