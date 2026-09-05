@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Providence Spaceliners — Space. Engineered from the Ground Up.</title>
+<meta name="description" content="Providence Spaceliners is designing the ASLAM 200: a fully reusable, runway-to-orbit passenger spaceplane. No launch pad. No punishing G-forces. First flights targeted 2028.">
+<meta name="theme-color" content="#04070d">
+<!-- Unofficial design concept: must never be indexed or mistaken for the live site. -->
+<meta name="robots" content="noindex, nofollow">
+
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Providence Spaceliners — Space. Engineered from the Ground Up.">
+<meta property="og:description" content="The ASLAM 200: a fully reusable, runway-to-orbit passenger spaceplane. Departs from major spaceports. First flights targeted 2028.">
+<meta property="og:image" content="assets/img/web/og-card-2560.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@700;800;900&family=Saira+Semi+Condensed:wght@500;600&family=Roboto:wght@300;400;700&display=swap">
+<link rel="stylesheet" href="css/site.css">
+<link rel="preload" as="image" href="assets/img/web/hero-runway-2560.webp" fetchpriority="high">
+
+<script type="importmap">
+{ "imports": {
+    "three": "./vendor/three/build/three.module.js",
+    "three/webgpu": "./vendor/three/build/three.module.js",
+    "three/tsl": "./vendor/three/build/three.module.js",
+    "three/addons/": "./vendor/three/examples/jsm/",
+    "gsap": "./vendor/gsap/index.js",
+    "gsap/ScrollTrigger": "./vendor/gsap/ScrollTrigger.js",
+    "lenis": "./vendor/lenis/lenis.mjs"
+} }
+</script>
+<script>document.documentElement.classList.add('js');</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Corporation",
+  "name": "Providence Spaceliners Corporation",
+  "url": "https://providencespaceliners.com/",
+  "description": "Designing the ASLAM 200, a fully reusable runway-to-orbit passenger spaceplane.",
+  "address": { "@type": "PostalAddress", "streetAddress": "1500 North Grant Street, Suite C", "addressLocality": "Denver", "addressRegion": "CO", "postalCode": "80303", "addressCountry": "US" },
+  "founder": [
+    { "@type": "Person", "name": "Sameer Khan", "jobTitle": "Co-Founder & Chief Designer" },
+    { "@type": "Person", "name": "J G Bowman", "jobTitle": "Co-Founder & Chief Strategist" },
+    { "@type": "Person", "name": "Dr. Anis Karim", "jobTitle": "Co-Founder & Chief Revenue Officer" }
+  ]
+}
+</script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════ preloader -->
+<div id="loader" aria-hidden="true">
+  <div class="loader-in">
+    <svg class="loader-mark" viewBox="0 0 100 62" aria-hidden="true"><path d="M6 56 L50 8 L94 56 M22 56 L50 26 L78 56"/></svg>
+    <div class="loader-bar"><i id="loader-fill"></i></div>
+    <div class="loader-pct"><span id="loader-pct">0</span>% — Preparing for departure</div>
+  </div>
+</div>
+
+<div class="meter" id="meter" aria-hidden="true"></div>
+<div class="cursor" id="cursor" aria-hidden="true"><i class="ring"></i><i class="dot"></i></div>
+
+<!-- ═════════════════════════════════════════════════════════════════ WebGL -->
+<canvas id="gl" aria-hidden="true"></canvas>
+<div id="gl-grade" aria-hidden="true"></div>
+
+<!-- ════════════════════════════════════════════════════════════════════ nav -->
+<header class="nav" id="nav">
+  <a class="brand" href="#top" aria-label="Providence Spaceliners, home">
+    <svg viewBox="0 0 100 62" aria-hidden="true"><path d="M6 56 L50 8 L94 56 M22 56 L50 26 L78 56" fill="none" stroke="#e4c61c" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="brand-txt"><b>Providence</b><span>Spaceliners</span></span>
+  </a>
+
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#case">The Case</a>
+    <a href="#vehicle">The Vehicle</a>
+    <a href="#flight">Flight Profile</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#team">Team</a>
+    <a href="#invest">Investors</a>
+  </nav>
+
+  <div class="nav-cta">
+    <a class="btn btn--sm" href="#contact">Join the Mission
+      <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="drawer"><i></i></button>
+  </div>
+</header>
+
+<div class="drawer" id="drawer">
+  <a href="#case">The Case</a>
+  <a href="#vehicle">The Vehicle</a>
+  <a href="#flight">Flight Profile</a>
+  <a href="#innovation">Technology</a>
+  <a href="#roadmap">Roadmap</a>
+  <a href="#team">Team</a>
+  <a href="#invest">Investors</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<nav class="rail" id="rail" aria-label="Section navigation">
+  <a href="#top"       data-rail="top"><em>Departure</em><i></i></a>
+  <a href="#case"      data-rail="case"><em>The Case</em><i></i></a>
+  <a href="#vehicle"   data-rail="vehicle"><em>The Vehicle</em><i></i></a>
+  <a href="#flight"    data-rail="flight"><em>Flight</em><i></i></a>
+  <a href="#innovation" data-rail="innovation"><em>Technology</em><i></i></a>
+  <a href="#roadmap"   data-rail="roadmap"><em>Roadmap</em><i></i></a>
+  <a href="#team"      data-rail="team"><em>Team</em><i></i></a>
+  <a href="#invest"    data-rail="invest"><em>Invest</em><i></i></a>
+</nav>
+
+<main id="top">
+
+<!-- ═══════════════════════════════════════════════════════════════════ hero -->
+<section class="hero" id="hero">
+  <div class="wrap hero-grid">
+    <p class="eyebrow" data-rise>Denver, Colorado &nbsp;·&nbsp; Detailed design phase</p>
+
+    <h1 class="rotator" id="rotator" aria-live="polite">
+      <span class="on">The most advanced <em>runway-to-space</em> plane</span>
+      <span>Reusable. Accessible. <em>Revolutionary.</em></span>
+      <span>Space travel. Built <em>from the ground up.</em></span>
+      <span>Hybrid propulsion. <em>Engineered elegance.</em></span>
+      <span>From runway to LEO — and <em>into deep space</em></span>
+    </h1>
+
+    <p class="lede hero-sub" data-rise data-d="2">
+      Space. Engineered from the ground up. The ASLAM&nbsp;200 takes off from a runway,
+      flies to orbit without shaking you apart, and glides home to land again — the same
+      vehicle, the same day.
+    </p>
+
+    <div class="hero-acts" data-rise data-d="3">
+      <a class="btn" href="#contact">Be part of the first chapter
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="btn btn--ghost" href="#vehicle">Explore the ASLAM 200</a>
+    </div>
+
+    <dl class="hero-facts" data-rise data-d="4">
+      <div><dt>First flights</dt><dd>Targeted <span class="gold">2028</span></dd></div>
+      <div><dt>Vehicle</dt><dd>ASLAM 200</dd></div>
+      <div><dt>Departs from</dt><dd>Major spaceports</dd></div>
+      <div><dt>Airframe</dt><dd>Fully reusable</dd></div>
+    </dl>
+  </div>
+
+  <div class="scroll-cue" aria-hidden="true"><i></i><span>Scroll</span></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ the case -->
+<section class="sec solid-bg" id="case">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-rise>The case</p>
+      <h2 data-rise data-d="1">The smarter path we're pioneering,<br>versus traditional rockets.</h2>
+      <p class="lede" data-rise data-d="2">
+        A rocket is a machine for surviving a launch. A spaceliner is a machine for
+        carrying people. Those are different problems — so we stopped solving the first one.
+      </p>
+    </div>
+
+    <div class="pillars">
+      <article class="pillar" data-rise>
+        <span class="pillar-n">01 — Speed &amp; comfort</span>
+        <h3>You will not be pinned to your seat.</h3>
+        <p class="dim">Gentle, sustained acceleration along an aerodynamic climb profile, not a
+          vertical shove. The kind of ride your body already knows.</p>
+        <ul>
+          <li>Runway takeoff, like any aircraft</li>
+          <li>No G-forces that pin you back</li>
+          <li>Smooth, unpowered glide home</li>
+        </ul>
+      </article>
+
+      <article class="pillar" data-rise data-d="1">
+        <span class="pillar-n">02 — Accessibility</span>
+        <h3>It leaves from an airport, not an island.</h3>
+        <p class="dim">If a runway can take a widebody, it can take a spaceliner. That collapses
+          the distance between a passenger and a launch to a taxi ride.</p>
+        <ul>
+          <li>Departs from major spaceports</li>
+          <li>No remote launch pads</li>
+          <li>Airline-inspired operational cycle</li>
+        </ul>
+      </article>
+
+      <article class="pillar" data-rise data-d="2">
+        <span class="pillar-n">03 — Sustainability</span>
+        <h3>Nothing is thrown into the ocean.</h3>
+        <p class="dim">Expendable hardware is what makes spaceflight rare and expensive.
+          A vehicle that flies again this afternoon changes the entire economic shape of orbit.</p>
+        <ul>
+          <li>Fully reusable airframe</li>
+          <li>Lower emissions per seat</li>
+          <li>Multiple flights per vehicle, per day</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="versus" data-rise>
+      <div class="versus-col versus-col--old">
+        <h4>The traditional rocket</h4>
+        <ul>
+          <li>Vertical launch from a remote pad</li>
+          <li>3–4 g sustained, peaking higher</li>
+          <li>Stages discarded or recovered by sea</li>
+          <li>Weather and range windows measured in days</li>
+          <li>Crew training required to fly</li>
+          <li>Turnaround measured in weeks</li>
+        </ul>
+      </div>
+      <div class="versus-mid" aria-hidden="true">Versus</div>
+      <div class="versus-col versus-col--new">
+        <h4>The Providence spaceliner</h4>
+        <ul>
+          <li>Horizontal takeoff from an existing runway</li>
+          <li>An acceleration profile built around passengers</li>
+          <li>One vehicle, returned intact, every flight</li>
+          <li>Departure windows measured in hours</li>
+          <li>You board it the way you board a jet</li>
+          <li>Turnaround targeted in hours</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════ stage -->
+<section class="stage">
+  <div class="wrap"><p data-rise>Runway takeoff.<br><em>No launch pad.</em></p></div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════ plate: hover -->
+<section class="plate plate--center" id="hover-plate">
+  <div class="plate-img" data-parallax>
+    <picture>
+      <source type="image/webp" srcset="assets/img/web/hero-hover-1280.webp 1280w, assets/img/web/hero-hover-2560.webp 2560w" sizes="100vw">
+      <img src="assets/img/web/hero-hover-2560.jpg" alt="The ASLAM 200 hanging motionless above mirror-still water, reflected beneath itself." loading="lazy" decoding="async" width="2560" height="1429">
+    </picture>
+    <video class="plate-video" data-src="assets/video/hover.mp4" muted loop playsinline preload="none" aria-hidden="true"></video>
+  </div>
+  <div class="wrap plate-body">
+    <p class="eyebrow eyebrow--plain" data-rise>Feel the underwater hover</p>
+    <h2 data-rise data-d="1">Weightless is a feeling,<br>not a statistic.</h2>
+    <p class="lede" data-rise data-d="2" style="margin-inline:auto">
+      Every design decision on this vehicle is measured against one question: what does it
+      feel like to be inside it? Quiet. Level. Suspended. The way floating should feel.
+    </p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════ vehicle -->
+<section class="sec solid-bg" id="vehicle">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-rise>The vehicle</p>
+      <h2 data-rise data-d="1">ASLAM 200.</h2>
+      <p class="lede" data-rise data-d="2">
+        A reusable spaceplane platform designed for runway-based operations and rapid
+        reflight. Currently in detailed design — every figure below is a design objective
+        under active engineering, and we label it as such.
+      </p>
+    </div>
+
+    <div class="vehicle">
+      <div class="vehicle-art" data-rise id="planview">
+        <div class="plan-frame">
+          <picture>
+            <source type="image/webp" srcset="assets/img/web/topdown-plan-1280.webp 1280w, assets/img/web/topdown-plan-2560.webp 2560w" sizes="(max-width: 1000px) 92vw, 46vw">
+            <img src="assets/img/web/topdown-plan-2560.jpg" alt="Plan view of the ASLAM 200 spaceplane from directly above, showing its ogival delta wing and four underwing engine nacelles." loading="lazy" decoding="async" width="2560" height="1429">
+          </picture>
+          <span class="hotspot" style="left:15%;top:50%"><b data-n="1"></b><span>Drooped supersonic nose</span></span>
+          <span class="hotspot" style="left:38%;top:56%"><b data-n="2"></b><span>Single-aisle cabin</span></span>
+          <span class="hotspot hotspot--l" style="left:58%;top:24%"><b data-n="3"></b><span>Ogival delta wing</span></span>
+          <span class="hotspot hotspot--l" style="left:79%;top:69%"><b data-n="4"></b><span>Four hybrid nacelles</span></span>
+        </div>
+        <ol class="plan-legend">
+          <li><b>1</b>Drooped supersonic nose</li>
+          <li><b>2</b>Single-aisle cabin</li>
+          <li><b>3</b>Ogival delta wing</li>
+          <li><b>4</b>Four hybrid nacelles</li>
+        </ol>
+      </div>
+
+      <div data-rise data-d="1">
+        <dl class="specs">
+          <div class="spec"><dt>Operational altitude</dt><dd>Suborbital to orbital-capable architecture</dd><span class="tag">In design</span></div>
+          <div class="spec"><dt>Passenger capacity</dt><dd>High-capacity transportation configuration</dd><span class="tag">System architecture</span></div>
+          <div class="spec"><dt>Reusability</dt><dd>Rapid turnaround operations</dd><span class="tag">Validation framework</span></div>
+          <div class="spec"><dt>Landing mode</dt><dd>Autonomous runway recovery</dd><span class="tag">Guidance under evaluation</span></div>
+          <div class="spec"><dt>Flight operations</dt><dd>Airline-inspired operational cycle</dd><span class="tag">Operational modelling</span></div>
+          <div class="spec"><dt>Propulsion</dt><dd>Multi-mode hybrid, four nacelles</dd><span class="tag">Trade studies</span></div>
+        </dl>
+        <p class="form-note" style="margin-top:1.6rem">
+          We publish development status alongside every target. Nothing on this page is
+          flight-proven yet, and we will not present it as though it were.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════ stage -->
+<section class="stage stage--right">
+  <div class="wrap"><p data-rise>One vehicle.<br><em>Multiple flights a day.</em></p></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ flight profile -->
+<section class="sec solid-bg" id="flight">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-rise>Flight profile</p>
+      <h2 data-rise data-d="1">Five phases. One vehicle.<br>Same day, if we do this right.</h2>
+      <p class="lede" data-rise data-d="2">The planned operational sequence, from the gate to the gate.</p>
+    </div>
+  </div>
+
+  <div class="seq-pin" id="seq">
+    <div class="seq-track" id="seq-track">
+      <article class="seq-card">
+        <figure><picture>
+          <source type="image/webp" srcset="assets/img/web/spaceport-1280.webp"><img src="assets/img/web/spaceport-1280.jpg" alt="The spaceliner at a lit spaceport gate at night with a jet bridge docked." loading="lazy" decoding="async"></picture></figure>
+        <div class="seq-body">
+          <span class="seq-n">Phase 01</span>
+          <h3>Ground operations</h3>
+          <p>Rapid vehicle preparation and diagnostics at a conventional gate. Passengers board from a jet bridge.</p>
+          <div class="seq-status">Status — Workflow modelling</div>
+        </div>
+      </article>
+
+      <article class="seq-card">
+        <figure><picture>
+          <source type="image/webp" srcset="assets/img/web/hero-runway-1280.webp"><img src="assets/img/web/hero-runway-1280.jpg" alt="The spaceliner rotating for takeoff from a wet coastal runway at sunset." loading="lazy" decoding="async"></picture></figure>
+        <div class="seq-body">
+          <span class="seq-n">Phase 02</span>
+          <h3>Assisted / hybrid launch</h3>
+          <p>Horizontal takeoff under airbreathing power, transitioning to the hybrid cycle as the air thins.</p>
+          <div class="seq-status">Status — Simulation phase</div>
+        </div>
+      </article>
+
+      <article class="seq-card">
+        <figure><picture>
+          <source type="image/webp" srcset="assets/img/web/ascent-1280.webp"><img src="assets/img/web/ascent-1280.jpg" alt="The spaceliner climbing steeply through the upper atmosphere." loading="lazy" decoding="async"></picture></figure>
+        <div class="seq-body">
+          <span class="seq-n">Phase 03</span>
+          <h3>High-altitude transition</h3>
+          <p>Autonomous trajectory management through the region where wings stop working and thrust takes over.</p>
+          <div class="seq-status">Status — Guidance validation</div>
+        </div>
+      </article>
+
+      <article class="seq-card">
+        <figure><picture>
+          <source type="image/webp" srcset="assets/img/web/cabin-1280.webp"><img src="assets/img/web/cabin-1280.jpg" alt="Passengers relaxed in a cream-leather spaceliner cabin with Earth filling the windows." loading="lazy" decoding="async"></picture></figure>
+        <div class="seq-body">
+          <span class="seq-n">Phase 04</span>
+          <h3>Orbital / suborbital operations</h3>
+          <p>Passenger-safe environmental systems hold the cabin at conditions a person can simply sit in.</p>
+          <div class="seq-status">Status — Architecture development</div>
+        </div>
+      </article>
+
+      <article class="seq-card">
+        <figure><picture>
+          <source type="image/webp" srcset="assets/img/web/glide-home-1280.webp"><img src="assets/img/web/glide-home-1280.jpg" alt="The spaceliner on final approach at dawn with landing gear down." loading="lazy" decoding="async"></picture></figure>
+        <div class="seq-body">
+          <span class="seq-n">Phase 05</span>
+          <h3>Autonomous recovery &amp; landing</h3>
+          <p>A silent, unpowered glide onto a runway — the vehicle returned intact and ready to be turned around.</p>
+          <div class="seq-status">Status — Recovery logic testing</div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════ plate: orbit -->
+<section class="plate" id="orbit-plate">
+  <div class="plate-img" data-parallax>
+    <picture>
+      <source type="image/webp" srcset="assets/img/web/orbit-earth-1280.webp 1280w, assets/img/web/orbit-earth-2560.webp 2560w" sizes="100vw">
+      <img src="assets/img/web/orbit-earth-2560.jpg" alt="The ASLAM 200 coasting in low Earth orbit, cabin windows lit gold against the blue limb of Earth." loading="lazy" decoding="async" width="2560" height="1429">
+    </picture>
+    <video class="plate-video" data-src="assets/video/orbit.mp4" muted loop playsinline preload="none" aria-hidden="true"></video>
+  </div>
+  <div class="wrap plate-body">
+    <p class="eyebrow" data-rise>In orbit</p>
+    <h2 data-rise data-d="1">Every window,<br>a lit one.</h2>
+    <p class="lede" data-rise data-d="2">
+      This is the whole argument in one frame: a vehicle carrying a cabin full of ordinary
+      people, above the atmosphere, that will land on a runway and do it again.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════ plate: cabin -->
+<section class="plate" id="cabin-plate">
+  <div class="plate-img" data-parallax>
+    <picture>
+      <source type="image/webp" srcset="assets/img/web/cabin-1280.webp 1280w, assets/img/web/cabin-2560.webp 2560w" sizes="100vw">
+      <img src="assets/img/web/cabin-2560.jpg" alt="The ASLAM 200 cabin in orbit: cream leather seats, warm cove lighting, Earth through panoramic windows." loading="lazy" decoding="async" width="2560" height="1429">
+    </picture>
+  </div>
+  <div class="wrap plate-body">
+    <p class="eyebrow" data-rise>Inside</p>
+    <h2 data-rise data-d="1">A cabin, not a capsule.</h2>
+    <p class="lede" data-rise data-d="2">
+      A window at every row. Seats you can actually sit in. Water that stays in the glass on
+      the way up. If spaceflight is going to become ordinary, it has to first become comfortable.
+    </p>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ innovation -->
+<section class="sec solid-bg" id="innovation">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-rise>Technology</p>
+      <h2 data-rise data-d="1">The science behind the dream —<br>in active development.</h2>
+    </div>
+
+    <div class="grid-3">
+      <article class="card" data-rise>
+        <h3>Multi-mode propulsion</h3>
+        <p>Research focused on operational efficiency, controllability and reusable flight
+          cycles — a propulsion system judged on how often it can fly again, not only on
+          how hard it can push.</p>
+      </article>
+      <article class="card" data-rise data-d="1">
+        <h3>Digital engineering</h3>
+        <p>Digital twins, structural simulation and model-based systems engineering to cut
+          iteration cycles and catch integration failures in software rather than in hardware.</p>
+      </article>
+      <article class="card" data-rise data-d="2">
+        <h3>Design for manufacture</h3>
+        <p>Transportation systems are viable only if they can be produced, maintained and
+          operated at scale. Manufacturability is a design input here, not a downstream problem.</p>
+      </article>
+    </div>
+
+    <div class="plate plate--center" style="min-height:auto;margin-top:clamp(3rem,6vw,5rem)">
+      <div class="wrap plate-body" style="padding-block:clamp(2.5rem,5vw,4rem)">
+        <p class="lede" data-rise style="font-family:var(--display);font-weight:700;font-size:clamp(1.3rem,2.6vw,2rem);color:var(--ice);line-height:1.3;letter-spacing:-0.02em;text-wrap:balance;margin-inline:auto">
+          “Safety is treated as a primary architecture constraint — not a downstream feature.”
+        </p>
+      </div>
+    </div>
+
+    <div class="sec-head" style="margin-top:clamp(2rem,4vw,3rem)">
+      <p class="eyebrow" data-rise>Safety &amp; reliability</p>
+      <h2 data-rise data-d="1">What we validate, and how.</h2>
+      <p class="lede" data-rise data-d="2">Rigorous iterative validation is the foundation — wind tunnels,
+        structural analysis, redundant systems, and operational resilience from day one.</p>
+    </div>
+
+    <ul class="checks" data-rise>
+      <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Structural analysis</li>
+      <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Thermal stress evaluation</li>
+      <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Failure-mode simulations</li>
+      <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Redundant systems architecture</li>
+      <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Flight software verification</li>
+      <li><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Operational risk modelling</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════ stage -->
+<section class="stage">
+  <div class="wrap"><p data-rise>From runway to LEO —<br><em>and into deep space.</em></p></div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════ roadmap -->
+<section class="sec solid-bg" id="roadmap">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-rise>Roadmap</p>
+      <h2 data-rise data-d="1">Our path to the stars.</h2>
+      <p class="lede" data-rise data-d="2">
+        A phased development strategy emphasising safety, manufacturability and operational
+        scalability. We share every major milestone, because this endeavour belongs to all of us.
+      </p>
+    </div>
+
+    <div class="road" id="road">
+      <div class="road-fill" id="road-fill" aria-hidden="true"></div>
+
+      <article class="phase" data-phase>
+        <span class="phase-dot" aria-hidden="true"></span>
+        <div class="phase-in">
+          <div class="phase-meta"><span class="phase-yr">2026</span><span class="phase-no">Phase 1</span></div>
+          <h3>Foundation &amp; systems architecture</h3>
+          <p class="dim">Establish the engineering, organisational and digital backbone.</p>
+          <ul class="phase-list">
+            <li>Core systems engineering architecture</li>
+            <li>Vehicle conceptual configuration studies</li>
+            <li>Propulsion trade studies</li>
+            <li>Aerospace digital workflow setup</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="phase" data-phase>
+        <span class="phase-dot" aria-hidden="true"></span>
+        <div class="phase-in">
+          <div class="phase-meta"><span class="phase-yr">2026–2028</span><span class="phase-no">Phase 2</span></div>
+          <h3>Digital engineering &amp; prototype development</h3>
+          <p class="dim">Transition from concept to engineering-grade prototype systems.</p>
+          <ul class="phase-list">
+            <li>Digital twin development</li>
+            <li>Structural simulations</li>
+            <li>Avionics and GNC architecture</li>
+            <li>Prototype propulsion subsystem testing</li>
+            <li>Scaled aerodynamic validation</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="phase" data-phase>
+        <span class="phase-dot" aria-hidden="true"></span>
+        <div class="phase-in">
+          <div class="phase-meta"><span class="phase-yr">2028–2031</span><span class="phase-no">Phase 3</span></div>
+          <h3>Propulsion &amp; flight demonstration</h3>
+          <p class="dim">Develop reusable propulsion systems and validate flight operations.</p>
+          <ul class="phase-list">
+            <li>Hybrid propulsion integration</li>
+            <li>Hypersonic systems research</li>
+            <li>Autonomous flight software</li>
+            <li>Flight envelope expansion</li>
+            <li>Reusable thermal systems</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="phase" data-phase>
+        <span class="phase-dot" aria-hidden="true"></span>
+        <div class="phase-in">
+          <div class="phase-meta"><span class="phase-yr">2031–2035</span><span class="phase-no">Phase 4</span></div>
+          <h3>Commercial operations preparation</h3>
+          <p class="dim">Build airline-compatible operational capability.</p>
+          <ul class="phase-list">
+            <li>Certification pathway development</li>
+            <li>Fleet maintenance architecture</li>
+            <li>Predictive maintenance systems</li>
+            <li>Spaceport operational planning</li>
+            <li>Airline partnership integration</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="phase" data-phase>
+        <span class="phase-dot" aria-hidden="true"></span>
+        <div class="phase-in" style="border-bottom:0">
+          <div class="phase-meta"><span class="phase-yr">2035+</span><span class="phase-no">Phase 5</span></div>
+          <h3>High-capacity space transportation</h3>
+          <p class="dim">Deployment of reusable, high-frequency spaceline operations.</p>
+          <ul class="phase-list">
+            <li>Large-capacity reusable spaceplanes</li>
+            <li>Point-to-point hypersonic transportation</li>
+            <li>Orbital transportation systems</li>
+            <li>Global spaceline ecosystem</li>
+            <li>Integrated propulsion service network</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ plate: deep -->
+<section class="plate plate--center" id="deep-plate">
+  <div class="plate-img" data-parallax>
+    <picture>
+      <source type="image/webp" srcset="assets/img/web/deep-space-1280.webp 1280w, assets/img/web/deep-space-2560.webp 2560w" sizes="100vw">
+      <img src="assets/img/web/deep-space-2560.jpg" alt="The spaceliner as a distant gleam departing across a field of stars." loading="lazy" decoding="async" width="2560" height="1429">
+    </picture>
+  </div>
+  <div class="wrap plate-body">
+    <p class="eyebrow eyebrow--plain" data-rise>From runway to LEO — and into deep space</p>
+    <h2 data-rise data-d="1">First flights targeted <span class="gold">2028</span>.</h2>
+    <div class="hero-acts" data-rise data-d="2" style="justify-content:center">
+      <a class="btn" href="#contact">Be part of the first chapter
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════ team -->
+<section class="sec solid-bg" id="team">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-rise>Leadership</p>
+      <h2 data-rise data-d="1">Building what others only dreamed of.</h2>
+      <p class="lede" data-rise data-d="2">
+        Founded in 2025 by Sameer Khan and his mentor, who saw a better way. Today: designing
+        the passenger spaceplane that makes spaceflight feel like jet travel.
+      </p>
+    </div>
+
+    <div class="crew">
+      <article class="crew-card" data-rise>
+        <div class="crew-photo">
+          <picture>
+            <source type="image/webp" srcset="assets/team/sameer-khan-400.webp 400w, assets/team/sameer-khan-800.webp 800w" sizes="(max-width: 700px) 92vw, 30vw">
+            <img src="assets/team/sameer-khan-800.jpg" alt="Sameer Khan, Co-Founder and Chief Designer" loading="lazy" decoding="async" width="800" height="800">
+          </picture>
+        </div>
+        <div class="crew-body">
+          <h3>Sameer Khan</h3>
+          <p class="crew-role">Co-Founder &amp; Chief Designer</p>
+          <p>Leads design and engineering. A young prodigy who has designed multiple orbital
+            infrastructure systems, an active environmental steward, and — when the drawings
+            are done — a poet.</p>
+        </div>
+      </article>
+      <article class="crew-card" data-rise data-d="1">
+        <div class="crew-photo">
+          <picture>
+            <source type="image/webp" srcset="assets/team/jg-bowman-400.webp 400w, assets/team/jg-bowman-800.webp 800w" sizes="(max-width: 700px) 92vw, 30vw">
+            <img src="assets/team/jg-bowman-800.jpg" alt="J G Bowman, Co-Founder and Chief Strategist" loading="lazy" decoding="async" width="800" height="800">
+          </picture>
+        </div>
+        <div class="crew-body">
+          <h3>J G Bowman</h3>
+          <p class="crew-role">Co-Founder &amp; Chief Strategist</p>
+          <p>A space systems manager with 50+ years of experience and a never-give-up
+            attitude. An ardent advocate for personal human spaceflight, and a former member
+            of the American Entrepreneurs Association.</p>
+        </div>
+      </article>
+      <article class="crew-card" data-rise data-d="2">
+        <div class="crew-photo">
+          <picture>
+            <source type="image/webp" srcset="assets/team/anis-karim-400.webp 400w, assets/team/anis-karim-800.webp 800w" sizes="(max-width: 700px) 92vw, 30vw">
+            <img src="assets/team/anis-karim-800.jpg" alt="Dr. Anis Karim, Co-Founder and Chief Revenue Officer" loading="lazy" decoding="async" width="800" height="800">
+          </picture>
+        </div>
+        <div class="crew-body">
+          <h3>Dr. Anis Karim</h3>
+          <p class="crew-role">Co-Founder &amp; Chief Revenue Officer</p>
+          <p>Brings 22+ years of space industry experience to Providence. His leadership roles
+            have benefited organisations worldwide, including the OneSpace group of companies.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════════ invest -->
+<section class="sec solid-bg" id="invest">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-rise>Investors</p>
+      <h2 data-rise data-d="1">Invest in the next<br>trillion-dollar industry.</h2>
+      <p class="lede" data-rise data-d="2">
+        Providence Spaceliners is open to investment from interested investors. If you would
+        like to invest, or to provide a Letter of Intent or Commitment Letter, get in touch.
+      </p>
+    </div>
+
+    <div class="stats" data-rise>
+      <div class="stat"><b data-count="2028">—</b><span>First flights targeted</span></div>
+      <div class="stat"><b data-count="5">—</b><span>Development phases</span></div>
+      <div class="stat"><b data-count="100" data-suffix="%">—</b><span>Reusable airframe target</span></div>
+      <div class="stat"><b data-count="2025">—</b><span>Founded</span></div>
+    </div>
+
+    <div class="grid-3" style="margin-top:clamp(2rem,4vw,3rem)">
+      <article class="card" data-rise>
+        <h3>Direct participation</h3>
+        <ul class="pillar" style="border:0;background:none;padding:0;margin-top:1rem"><li>First investors</li><li>Lead investors</li><li>Premier investor</li></ul>
+      </article>
+      <article class="card" data-rise data-d="1">
+        <h3>Market routes</h3>
+        <ul class="pillar" style="border:0;background:none;padding:0;margin-top:1rem"><li>Investments via stock brokers</li><li>Direct Stock Purchase Plans (DSPPs)</li><li>Dividend Reinvestment Plans (DRIPs)</li></ul>
+      </article>
+      <article class="card" data-rise data-d="2">
+        <h3>Regulated offerings</h3>
+        <ul class="pillar" style="border:0;background:none;padding:0;margin-top:1rem"><li>Regulated Crowdfunding (Reg CF)</li><li>Private Placements (Reg D)</li><li>Strategic alliances &amp; joint ventures</li></ul>
+      </article>
+    </div>
+
+    <p class="form-note" data-rise style="margin-top:2rem;max-width:80ch">
+      Nothing on this page is an offer to sell or a solicitation of an offer to buy any
+      security. Any offering will be made only through official offering documents.
+    </p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════ contact -->
+<section class="sec solid-bg" id="contact">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow" data-rise>Contact</p>
+      <h2 data-rise data-d="1">Get in touch with us.</h2>
+    </div>
+
+    <div class="form-wrap">
+      <aside class="contact-aside" data-rise>
+        <div class="contact-block">
+          <h3>Headquarters</h3>
+          <p>1500 North Grant Street, Suite C<br>Denver, CO 80303<br>United States</p>
+        </div>
+        <div class="contact-block">
+          <h3>Programme status</h3>
+          <p>Detailed design phase. First flights targeted 2028.</p>
+        </div>
+        <div class="contact-block" style="border-bottom:0">
+          <h3>Careers &amp; media</h3>
+          <p class="dim">Our job board and press kit open soon. Use the form and select a reason — we will route it.</p>
+        </div>
+      </aside>
+
+      <form class="form" id="form" novalidate data-rise data-d="1">
+        <div class="row">
+          <div class="field"><label for="fn">First name</label><input id="fn" name="firstName" autocomplete="given-name" required></div>
+          <div class="field"><label for="ln">Last name</label><input id="ln" name="lastName" autocomplete="family-name" required></div>
+        </div>
+        <div class="field"><label for="em">Email address</label><input id="em" name="email" type="email" autocomplete="email" required></div>
+        <div class="field">
+          <label for="rs">Reason for getting in touch</label>
+          <select id="rs" name="reason">
+            <option>I would like to invest in Providence Spaceliners</option>
+            <option>I have a business proposal</option>
+            <option>I am seeking a career with Providence Spaceliners</option>
+            <option>I am seeking information</option>
+            <option>I have another request</option>
+          </select>
+        </div>
+        <div class="field"><label for="sb">Subject</label><input id="sb" name="subject"></div>
+        <div class="field"><label for="ms">Message</label><textarea id="ms" name="message" required></textarea></div>
+        <label class="consent"><input type="checkbox" id="tc" required><span>I agree to Providence Spaceliners' Terms of Service.</span></label>
+        <div class="form-ok" id="form-ok" role="status"></div>
+        <div><button class="btn" type="submit">Send message
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button></div>
+        <p class="form-note">Demo build — this form validates, but does not deliver mail yet.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ═════════════════════════════════════════════════════════════════ footer -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a class="brand" href="#top" aria-label="Providence Spaceliners, home">
+          <svg viewBox="0 0 100 62" aria-hidden="true"><path d="M6 56 L50 8 L94 56 M22 56 L50 26 L78 56" fill="none" stroke="#e4c61c" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="brand-txt"><b>Providence</b><span>Spaceliners</span></span>
+        </a>
+        <p>Space. Engineered from the ground up. Designing the ASLAM 200 — a fully reusable,
+           runway-to-orbit passenger spaceplane.</p>
+        <a class="tlink" href="#contact">Be part of the first chapter</a>
+      </div>
+
+      <div class="foot-col">
+        <h2>Company</h2>
+        <ul>
+          <li><a href="#team">About</a></li>
+          <li><a href="#innovation">Technology</a></li>
+          <li><a href="#roadmap">Roadmap</a></li>
+          <li><a href="#team">Team</a></li>
+          <li><a href="#contact">Careers</a></li>
+        </ul>
+      </div>
+
+      <div class="foot-col">
+        <h2>Engage</h2>
+        <ul>
+          <li><a href="#invest">Investors</a></li>
+          <li><a href="#contact">Partners</a></li>
+          <li><a href="#contact">Insights</a></li>
+          <li><a href="#contact">Media</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="foot-bot">
+      <span>© 2026 Providence Spaceliners Corporation · All Rights Reserved.</span>
+      <span class="foot-note">An independent design concept by MainState&nbsp;Labs. Not affiliated
+        with, authorised by, or endorsed by Providence Spaceliners Corporation.</span>
+      <div class="foot-legal">
+        <a href="https://providencespaceliners.com/legal/privacy/">Privacy Policy</a>
+        <a href="https://providencespaceliners.com/legal/terms/">Terms of Use</a>
+        <a href="https://providencespaceliners.com/legal/cookie/">Cookie Policy</a>
+        <a href="https://providencespaceliners.com/legal/accessibility/">Accessibility Statement</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Production bundle (npm run build). To work on the unbundled ES modules instead,
+     swap this for  <script type="module" src="js/main.js"></script>  — the importmap
+     above already resolves three / gsap / lenis out of vendor/. -->
+<script type="module" src="dist/app.js"></script>
+</body>
+</html>
